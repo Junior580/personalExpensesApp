@@ -13,7 +13,14 @@ class ExpensesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(primarySwatch: Colors.purple), home: const HomePage());
+        theme: ThemeData(
+            primarySwatch: Colors.green,
+            fontFamily: 'Quicksand',
+            textTheme: ThemeData.light().textTheme.copyWith(
+                titleMedium:
+                    const TextStyle(fontFamily: 'OpenSans', fontSize: 20)),
+            appBarTheme: const AppBarTheme()),
+        home: const HomePage());
   }
 }
 
@@ -25,7 +32,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _transactions = [
+  final List<Transaction> _transactions = [
     Transaction(
       id: 't1',
       title: 'Novo Tenis de corrida',
@@ -79,10 +86,10 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Container(
-              child: const Card(
-                color: Colors.blue,
+              child: Card(
+                color: Theme.of(context).primaryColor,
                 elevation: 5,
-                child: Text('Gráfico'),
+                child: const Text('Gráfico'),
               ),
             ),
             TransactionList(transactions: _transactions),
