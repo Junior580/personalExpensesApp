@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:myapp2/components/transaction_form.dart';
-
 import 'dart:math';
+import 'package:flutter/material.dart';
+import 'components/chart.dart';
+import 'components/transaction_form.dart';
+
 import '/models/transaction.dart';
 import 'components/transaction_list.dart';
 
@@ -34,18 +35,30 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final List<Transaction> _transactions = [
     Transaction(
+      id: 't0',
+      title: 'Conta antiga',
+      value: 400.76,
+      date: DateTime.now().subtract(const Duration(days: 32)),
+    ),
+    Transaction(
       id: 't1',
       title: 'Novo Tenis de corrida',
       value: 310.76,
-      date: DateTime.now(),
+      date: DateTime.now().subtract(const Duration(days: 3)),
     ),
     Transaction(
       id: 't2',
       title: 'Conta de luz',
       value: 211.31,
-      date: DateTime.now(),
+      date: DateTime.now().subtract(const Duration(days: 4)),
     ),
   ];
+
+  List<Transaction> get _recentTransactions {
+    return _transactions.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(const Duration(days: 7)));
+    }).toList();
+  }
 
   _addTransaction(String title, double value) {
     final newTransaction = Transaction(
@@ -85,13 +98,14 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
-              child: Card(
-                color: Theme.of(context).primaryColor,
-                elevation: 5,
-                child: const Text('Gráfico'),
-              ),
-            ),
+            // Container(
+            //   child: Card(
+            //     color: Theme.of(context).primaryColor,
+            //     elevation: 5,
+            //     child: const Text('Gráfico'),
+            //   ),
+            // ),
+            Chart(recentTransaction: _recentTransactions),
             TransactionList(transactions: _transactions),
           ],
         ),

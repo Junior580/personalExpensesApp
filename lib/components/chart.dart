@@ -1,6 +1,9 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/transaction.dart';
+import 'chart_bar.dart';
 
 class Chart extends StatelessWidget {
   final List<Transaction> recentTransaction;
@@ -23,9 +26,6 @@ class Chart extends StatelessWidget {
         }
       }
 
-      print(DateFormat.E().format(weekDay)[0]);
-      print(totalSum);
-
       return {
         "day": DateFormat.E().format(weekDay)[0],
         "value": totalSum,
@@ -35,11 +35,17 @@ class Chart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
+    return Card(
         elevation: 6,
-        margin: EdgeInsets.all(20),
+        margin: const EdgeInsets.all(20),
         child: Row(
-          children: <Widget>[],
+          children: _groupedTransaction.map((tr) {
+            return ChartBar(
+              label: tr['day'].toString(),
+              value: double.tryParse(tr['value'].toString()) ?? 0,
+              percentage: 0,
+            );
+          }).toList(),
         ));
   }
 }
