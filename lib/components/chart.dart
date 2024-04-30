@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/transaction.dart';
@@ -33,19 +31,32 @@ class Chart extends StatelessWidget {
     });
   }
 
+  double get _weekTotalValue {
+    return _groupedTransaction.fold(0.0, (sum, tr) {
+      return sum + (tr['value'] as double);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
         elevation: 6,
         margin: const EdgeInsets.all(20),
-        child: Row(
-          children: _groupedTransaction.map((tr) {
-            return ChartBar(
-              label: tr['day'].toString(),
-              value: double.tryParse(tr['value'].toString()) ?? 0,
-              percentage: 0,
-            );
-          }).toList(),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: _groupedTransaction.map((tr) {
+              return Flexible(
+                fit: FlexFit.tight,
+                child: ChartBar(
+                  label: (tr['day'] as String),
+                  value: (tr['value'] as double),
+                  percentage: (tr['value'] as double) / _weekTotalValue,
+                ),
+              );
+            }).toList(),
+          ),
         ));
   }
 }

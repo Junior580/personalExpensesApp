@@ -52,6 +52,12 @@ class _HomePageState extends State<HomePage> {
       value: 211.31,
       date: DateTime.now().subtract(const Duration(days: 4)),
     ),
+    Transaction(
+      id: 't3',
+      title: 'Credit card',
+      value: 100000.31,
+      date: DateTime.now().subtract(const Duration(days: 4)),
+    ),
   ];
 
   List<Transaction> get _recentTransactions {
@@ -98,13 +104,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            // Container(
-            //   child: Card(
-            //     color: Theme.of(context).primaryColor,
-            //     elevation: 5,
-            //     child: const Text('Gráfico'),
-            //   ),
-            // ),
             Chart(recentTransaction: _recentTransactions),
             TransactionList(transactions: _transactions),
           ],
