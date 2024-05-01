@@ -36,49 +36,51 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Transaction> _transactions = [
-    Transaction(
-      id: 't0',
-      title: 'Conta antiga',
-      value: 400.76,
-      date: DateTime.now().subtract(const Duration(days: 32)),
-    ),
-    Transaction(
-      id: 't1',
-      title: 'Novo Tenis de corrida',
-      value: 310.76,
-      date: DateTime.now().subtract(const Duration(days: 3)),
-    ),
-    Transaction(
-      id: 't2',
-      title: 'Conta de luz',
-      value: 211.31,
-      date: DateTime.now().subtract(const Duration(days: 4)),
-    ),
-    Transaction(
-      id: 't3',
-      title: 'Credit card',
-      value: 249.50,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: 't4',
-      title: 'Lanche',
-      value: 249.50,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: 't5',
-      title: 'Roupas',
-      value: 302.77,
-      date: DateTime.now().subtract(const Duration(days: 2)),
-    ),
-    Transaction(
-      id: 't6',
-      title: 'Jogo do bixo',
-      value: 110.80,
-      date: DateTime.now().subtract(const Duration(days: 1)),
-    ),
+    // Transaction(
+    //   id: 't0',
+    //   title: 'Conta antiga',
+    //   value: 400.76,
+    //   date: DateTime.now().subtract(const Duration(days: 32)),
+    // ),
+    // Transaction(
+    //   id: 't1',
+    //   title: 'Novo Tenis de corrida',
+    //   value: 310.76,
+    //   date: DateTime.now().subtract(const Duration(days: 3)),
+    // ),
+    // Transaction(
+    //   id: 't2',
+    //   title: 'Conta de luz',
+    //   value: 211.31,
+    //   date: DateTime.now().subtract(const Duration(days: 4)),
+    // ),
+    // Transaction(
+    //   id: 't3',
+    //   title: 'Credit card',
+    //   value: 249.50,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: 't4',
+    //   title: 'Lanche',
+    //   value: 249.50,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: 't5',
+    //   title: 'Roupas',
+    //   value: 302.77,
+    //   date: DateTime.now().subtract(const Duration(days: 2)),
+    // ),
+    // Transaction(
+    //   id: 't6',
+    //   title: 'Jogo do bixo',
+    //   value: 110.80,
+    //   date: DateTime.now().subtract(const Duration(days: 1)),
+    // ),
   ];
+
+  bool _showChart = false;
 
   List<Transaction> get _recentTransactions {
     return _transactions.where((tr) {
@@ -119,6 +121,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    bool isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     final appBar = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
       title: Text(
@@ -144,14 +148,30 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            SizedBox(
-                height: availableHeight * 0.3,
-                child: Chart(recentTransaction: _recentTransactions)),
-            SizedBox(
-              height: availableHeight * 0.7,
-              child: TransactionList(
-                  transactions: _transactions, onRemove: _deleteTransaction),
-            ),
+            if (isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Exibir Gráfico'),
+                  Switch(
+                      value: _showChart,
+                      onChanged: (value) {
+                        setState(() {
+                          _showChart = value;
+                        });
+                      }),
+                ],
+              ),
+            if (_showChart || !isLandscape)
+              SizedBox(
+                  height: availableHeight * (isLandscape ? 0.7 : 0.3),
+                  child: Chart(recentTransaction: _recentTransactions)),
+            if (!_showChart || !isLandscape)
+              SizedBox(
+                height: availableHeight * 0.7,
+                child: TransactionList(
+                    transactions: _transactions, onRemove: _deleteTransaction),
+              ),
           ],
         ),
       ),
