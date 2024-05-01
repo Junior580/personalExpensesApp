@@ -119,23 +119,39 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        title: const Text('Despesas Pessoais'),
-        actions: [
-          IconButton(
-              onPressed: () => _openTransactionFormModal(context),
-              icon: const Icon(Icons.add))
-        ],
+    final appBar = AppBar(
+      backgroundColor: Theme.of(context).primaryColor,
+      title: Text(
+        'Despesas Pessoais',
+        style: TextStyle(
+          fontSize: 20 * MediaQuery.textScalerOf(context).scale(1),
+        ),
       ),
+      actions: [
+        IconButton(
+            onPressed: () => _openTransactionFormModal(context),
+            icon: const Icon(Icons.add))
+      ],
+    );
+
+    final availableHeight = MediaQuery.of(context).size.height -
+        appBar.preferredSize.height -
+        MediaQuery.of(context).padding.top;
+
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Chart(recentTransaction: _recentTransactions),
-            TransactionList(
-                transactions: _transactions, onRemove: _deleteTransaction),
+            SizedBox(
+                height: availableHeight * 0.3,
+                child: Chart(recentTransaction: _recentTransactions)),
+            SizedBox(
+              height: availableHeight * 0.7,
+              child: TransactionList(
+                  transactions: _transactions, onRemove: _deleteTransaction),
+            ),
           ],
         ),
       ),
