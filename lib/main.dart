@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'components/chart.dart';
 import 'components/transaction_form.dart';
@@ -36,48 +38,48 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Transaction> _transactions = [
-    // Transaction(
-    //   id: 't0',
-    //   title: 'Conta antiga',
-    //   value: 400.76,
-    //   date: DateTime.now().subtract(const Duration(days: 32)),
-    // ),
-    // Transaction(
-    //   id: 't1',
-    //   title: 'Novo Tenis de corrida',
-    //   value: 310.76,
-    //   date: DateTime.now().subtract(const Duration(days: 3)),
-    // ),
-    // Transaction(
-    //   id: 't2',
-    //   title: 'Conta de luz',
-    //   value: 211.31,
-    //   date: DateTime.now().subtract(const Duration(days: 4)),
-    // ),
-    // Transaction(
-    //   id: 't3',
-    //   title: 'Credit card',
-    //   value: 249.50,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't4',
-    //   title: 'Lanche',
-    //   value: 249.50,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't5',
-    //   title: 'Roupas',
-    //   value: 302.77,
-    //   date: DateTime.now().subtract(const Duration(days: 2)),
-    // ),
-    // Transaction(
-    //   id: 't6',
-    //   title: 'Jogo do bixo',
-    //   value: 110.80,
-    //   date: DateTime.now().subtract(const Duration(days: 1)),
-    // ),
+    Transaction(
+      id: 't0',
+      title: 'Conta antiga',
+      value: 400.76,
+      date: DateTime.now().subtract(const Duration(days: 32)),
+    ),
+    Transaction(
+      id: 't1',
+      title: 'Novo Tenis de corrida',
+      value: 310.76,
+      date: DateTime.now().subtract(const Duration(days: 3)),
+    ),
+    Transaction(
+      id: 't2',
+      title: 'Conta de luz',
+      value: 211.31,
+      date: DateTime.now().subtract(const Duration(days: 4)),
+    ),
+    Transaction(
+      id: 't3',
+      title: 'Credit card',
+      value: 249.50,
+      date: DateTime.now(),
+    ),
+    Transaction(
+      id: 't4',
+      title: 'Lanche',
+      value: 249.50,
+      date: DateTime.now(),
+    ),
+    Transaction(
+      id: 't5',
+      title: 'Roupas',
+      value: 302.77,
+      date: DateTime.now().subtract(const Duration(days: 2)),
+    ),
+    Transaction(
+      id: 't6',
+      title: 'Jogo do bixo',
+      value: 110.80,
+      date: DateTime.now().subtract(const Duration(days: 1)),
+    ),
   ];
 
   bool _showChart = false;
@@ -114,6 +116,7 @@ class _HomePageState extends State<HomePage> {
   _openTransactionFormModal(BuildContext context) {
     showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
         builder: (_) {
           return TransactionForm(onSubmit: _addTransaction);
         });
@@ -121,8 +124,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    final midiaQuery = MediaQuery.of(context);
+    bool isLandscape = midiaQuery.orientation == Orientation.landscape;
+
     final appBar = AppBar(
       backgroundColor: Theme.of(context).primaryColor,
       title: Text(
@@ -132,15 +136,23 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       actions: [
+        if (isLandscape)
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  _showChart = !_showChart;
+                });
+              },
+              icon: Icon(_showChart ? Icons.list : Icons.show_chart)),
         IconButton(
             onPressed: () => _openTransactionFormModal(context),
-            icon: const Icon(Icons.add))
+            icon: const Icon(Icons.add)),
       ],
     );
 
-    final availableHeight = MediaQuery.of(context).size.height -
+    final availableHeight = midiaQuery.size.height -
         appBar.preferredSize.height -
-        MediaQuery.of(context).padding.top;
+        midiaQuery.padding.top;
 
     return Scaffold(
       appBar: appBar,
@@ -148,37 +160,40 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            if (isLandscape)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Exibir Gráfico'),
-                  Switch(
-                      value: _showChart,
-                      onChanged: (value) {
-                        setState(() {
-                          _showChart = value;
-                        });
-                      }),
-                ],
-              ),
+            // if (isLandscape)
+            //   Row(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: [
+            //       const Text('Exibir Gráfico'),
+            //       Switch.adaptive(
+            //           activeColor: Theme.of(context).primaryColor,
+            //           value: _showChart,
+            //           onChanged: (value) {
+            //             setState(() {
+            //               _showChart = value;
+            //             });
+            //           }),
+            //     ],
+            //   ),
             if (_showChart || !isLandscape)
               SizedBox(
-                  height: availableHeight * (isLandscape ? 0.7 : 0.3),
+                  height: availableHeight * (isLandscape ? 0.8 : 0.3),
                   child: Chart(recentTransaction: _recentTransactions)),
             if (!_showChart || !isLandscape)
               SizedBox(
-                height: availableHeight * 0.7,
+                height: availableHeight * (isLandscape ? 1 : 0.7),
                 child: TransactionList(
                     transactions: _transactions, onRemove: _deleteTransaction),
               ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () => _openTransactionFormModal(context),
-      ),
+      floatingActionButton: Platform.isIOS
+          ? Container()
+          : FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () => _openTransactionFormModal(context),
+            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
